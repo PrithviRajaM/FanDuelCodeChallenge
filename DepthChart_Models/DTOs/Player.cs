@@ -1,9 +1,12 @@
 ﻿namespace DepthChart_Models.DTOs;
 
-internal class Player
+/// <summary>
+/// Data transfer object to relay basic details of a player
+/// </summary>
+public class Player
 {
     public int PlayerNumber { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
-    public string PlayerPosition { get; set; }
+    public string DepthChartkey { get; set; }
 }

@@ -7,5 +7,4 @@ public class JwtBearerSettings
     public string Audience { get; set; } = string.Empty;
 
     public string SigningKey { get; set; } = string.Empty;
-
 }

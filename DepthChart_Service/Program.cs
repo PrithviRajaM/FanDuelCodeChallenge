@@ -8,6 +8,9 @@ using JwtBearer.Shared.Authentication;
 using Microsoft.Extensions.Caching.Memory;
 using DepthChart_Business.Interfaces;
 using DepthChart_Business.Business;
+using DepthChart_DB.Interface;
+using DepthChart_DB.Repositories;
+using DepthChart_Models.MappingProfiles;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -97,6 +100,12 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+builder.Services.AddAutoMapper(typeof(PlayerMapProfile));
+builder.Services.AddScoped<IPlayerBusiness, PlayerBusiness>();
+builder.Services.AddScoped<IDepthChartBusiness, DepthChartBusiness>();
+builder.Services.AddScoped<IPlayerRepository, PlayerRepository>();
+builder.Services.AddScoped<IDepthChartRepository, DepthChartRepository>();
+
 var app = builder.Build();
 
 //Configure the HTTP request pipeline.
@@ -110,8 +119,6 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-builder.Services.AddScoped<IPlayerBusiness, PlayerBusiness>();
-
 app.UseHttpsRedirection();
 
 app.UseCors(x => x
@@ -121,6 +128,6 @@ app.UseCors(x => x
 
 app.UseAuthorization();
 
-app.MapControllers().RequireAuthorization();
+app.MapControllers();//.RequireAuthorization();
 
 app.Run();

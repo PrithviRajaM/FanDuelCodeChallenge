@@ -1,4 +1,5 @@
-﻿using System.Security.Principal;
+﻿#nullable enable
+using System.Security.Principal;
 
 namespace JwtBearer.Shared.Authentication;
 

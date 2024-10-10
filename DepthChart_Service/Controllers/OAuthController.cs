@@ -34,7 +34,10 @@ public class OAuthController : Controller
         if (grantType != "client_credentials")
         {
             //Grant type must be set as 'client_credentials' otherwise it throws a bad request
-            return BadRequest(new { error = "invalid_grant", error_description = "The grant type form value must be set as 'client_credentials'" });
+            return BadRequest(new { 
+                error = "invalid_grant", 
+                error_description = "The grant type form value must be set as 'client_credentials'" 
+            });
         }
 
         //Generate JWT Token
@@ -61,11 +64,18 @@ public class OAuthController : Controller
             Expires = expiry,
             Issuer = _jwtBearerSettings.Issuer,
             Audience = _jwtBearerSettings.Audience,
-            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtBearerSettings.SigningKey)), SecurityAlgorithms.HmacSha512Signature),
+            SigningCredentials = new SigningCredentials(
+                    new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtBearerSettings.SigningKey)), 
+                    SecurityAlgorithms.HmacSha512Signature
+                ),
             IssuedAt = now,
             NotBefore = now,
         }));
 
-        return Ok(new { access_token = token, token_type = JwtBearerDefaults.AuthenticationScheme, expires_in = expiry.Subtract(DateTime.UtcNow).TotalSeconds.ToString("0") });
+        return Ok(new { 
+            access_token = token, 
+            token_type = JwtBearerDefaults.AuthenticationScheme, 
+            expires_in = expiry.Subtract(DateTime.UtcNow).TotalSeconds.ToString("0") 
+        });
     }
 }

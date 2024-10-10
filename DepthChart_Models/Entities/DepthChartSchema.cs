@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace DepthChart_Models.Entities;
 
-namespace DepthChart_Models.Entities
+/// <summary>
+/// This object simulates as a DB schema
+/// </summary>
+public class DepthChartSchema
 {
-    public class DepthChartSchema
-    {
-        public List<PlayerEntity> Players { get; set; }
-    }
+    public List<SportsEntity> Sports { get; set; } = new List<SportsEntity>();
+    public List<TeamsEntity> Teams { get; set; } = new List<TeamsEntity>();
+    public List<PlayerEntity> Players { get; set; } = new List<PlayerEntity>();
+    public List<PositionDepthEntity> PositionDepths { get; set; } = new List<PositionDepthEntity>();
 }
