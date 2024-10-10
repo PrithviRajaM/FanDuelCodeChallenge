@@ -39,6 +39,7 @@ public class DepthChartBusinessTests : CoreBusinessTestMocks
 
         Assert.True(response.Status == ReturnStatus.NotFound);
         Assert.True(response.Data.Players.Count == 0);
+        Assert.True(response.Message == "No backup players found for the player.");
     }
 
     [Fact]
@@ -49,6 +50,7 @@ public class DepthChartBusinessTests : CoreBusinessTestMocks
 
         Assert.True(response.Status == ReturnStatus.NotFound);
         Assert.True(response.Data.Players.Count == 0);
+        Assert.True(response.Message == "The request player is not found in the position depths.");
     }
 
     [Fact]
@@ -62,4 +64,64 @@ public class DepthChartBusinessTests : CoreBusinessTestMocks
         Assert.True(response.Data.PositionTypes.Count == 5);
         Assert.True(response.Data.TeamManagement.GeneralManager == "General Manager");
     }
+
+    #region EdgeCaseTests
+    [Fact]
+    public void Get_Players_In_Position_Wrong_Position_Code()
+    {
+        var depthChartbusiness = new DepthChartBusiness(GetPlayerRepo("WithDepth"), GetDepthChartRepo(true), GetMapper());
+        var response = depthChartbusiness.GetPlayersInPosition(_teamId, _wrongPositionCode);
+
+        Assert.True(response.Status == ReturnStatus.NotFound);
+        Assert.True(response.Data == null);
+        Assert.True(response.BusinessResponseCode == "NotFound");
+        Assert.True(response.Message == $"No matching position found for the provided Position Code '{_wrongPositionCode}'.");
+    }
+
+    [Fact]
+    public void Get_Backups_For_Unknown_Player()
+    {
+        var depthChartbusiness = new DepthChartBusiness(GetPlayerRepo("WithDepth"), GetDepthChartRepo(true), GetMapper());
+        var response = depthChartbusiness.GetBackups(_teamId, _positionCode, _unknownPlayerId);
+
+        Assert.True(response.Status == ReturnStatus.Error);
+        Assert.True(response.Data == null);
+        Assert.True(response.Message == $"No such player found for the PlayerId.");
+    }
+
+    [Fact]
+    public void Get_Backups_For_Deleted_Player()
+    {
+        var depthChartbusiness = new DepthChartBusiness(GetPlayerRepo("WithDepth"), GetDepthChartRepo(true), GetMapper());
+        var response = depthChartbusiness.GetBackups(_teamId, _positionCode, _deletedPlayerId);
+
+        Assert.True(response.Status == ReturnStatus.Error);
+        Assert.True(response.Data == null);
+        Assert.StartsWith("The player was already deleted, on", response.Message);
+    }
+
+    [Fact]
+    public void Get_Backups_With_Wrong_Position_Code()
+    {
+        var depthChartbusiness = new DepthChartBusiness(GetPlayerRepo("WithDepth"), GetDepthChartRepo(true), GetMapper());
+        var response = depthChartbusiness.GetBackups(_teamId, _wrongPositionCode, _playerId_1);
+
+        Assert.True(response.Status == ReturnStatus.NotFound);
+        Assert.True(response.Data == null);
+        Assert.True(response.BusinessResponseCode == "NotFound");
+        Assert.True(response.Message == $"No matching position found for the provided Position Code '{_wrongPositionCode}'.");
+    }
+
+    [Fact]
+    public void Get_Full_Depth_Chart_For_Unknown_Team()
+    {
+        var depthChartbusiness = new DepthChartBusiness(GetPlayerRepo("WithDepth"), GetDepthChartRepo(true), GetMapper());
+        var response = depthChartbusiness.GetFullDepthChart(_unknownTeamId);
+
+        Assert.True(response.Status == ReturnStatus.NotFound);
+        Assert.True(response.Data == null);
+        Assert.True(response.Message == "No team found for the provided TeamId.");
+    }
+
+    #endregion
 }

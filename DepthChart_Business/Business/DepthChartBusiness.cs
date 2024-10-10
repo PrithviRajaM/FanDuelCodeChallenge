@@ -78,7 +78,7 @@ public class DepthChartBusiness : CoreBusiness, IDepthChartBusiness
                     TeamId = teamId,
                     PositionCode = positionCode
                 },
-                $"No matching position found for the provided Position Code '{positionCode}'."
+                $"The request player is not found in the position depths."
             );
 
         // Determine position depth of the requested player

@@ -16,24 +16,24 @@ namespace DepthChart_UnitTests.BusinessTests;
 /// </summary>
 public class CoreBusinessTestMocks
 {
-    public static IPlayerRepository GetPlayerRepo(string depthOption)
+    public static IPlayerRepository GetPlayerRepo(string depthOption, bool? appendError = false, bool? removeError = false)
     {
         var playerRepo = new Mock<IPlayerRepository>();
 
-        playerRepo.Setup(s => s.AddPlayer(
-                                    It.IsAny<Player>()
-                                ))
+        playerRepo.Setup(s => s.AddPlayer(It.IsAny<Player>()))
             .Returns(_playerId_1);
 
+#pragma warning disable CS8604 // Possible null reference argument.
         playerRepo.Setup(s => s.AppendPlayerInPositionDepth(
                                     It.IsAny<Guid>(),
                                     It.IsAny<PlayerPositionsEnum>(),
                                     It.Is<Guid>(y => y == _playerId_1),
                                     It.IsAny<PlayerStatusEnum?>()
                                 ))
-            .Returns(new List<PositionDepthEntity>() {
+            .Returns((bool)appendError ? null : new List<PositionDepthEntity>() {
                 new PositionDepthEntity() { PlayerId = _playerId_1, TeamId = _teamId, PositionDepth = 1 }
             });
+#pragma warning restore CS8604 // Possible null reference argument.
 
         var positionDepth = new List<PositionDepthEntity>();
         if (depthOption == "WithDepth" && depthOption != "WithOutPlayer1") 
@@ -64,10 +64,19 @@ public class CoreBusinessTestMocks
                                     It.IsAny<PlayerPositionsEnum>(),
                                     It.IsAny<Guid>()
                                 ))
-            .Returns(positionDepth);
+            .Returns((bool)removeError ? null : positionDepth);
 
         playerRepo.Setup(s => s.GetPlayer(It.IsAny<Guid>()))
-            .Returns(_playerEntity);
+            .Returns((Guid playerId) =>
+            {
+                switch (playerId)
+                {
+                    case var value when value == _playerId_1: return _playerEntity;
+                    case var value when value == _unknownPlayerId: return null;
+                    case var value when value == _deletedPlayerId: return _deletedPlayerEntity;
+                    default: return _playerEntity;
+                }
+            });
 
         return playerRepo.Object;
     }
@@ -85,7 +94,15 @@ public class CoreBusinessTestMocks
                     _positionDepthEntity_1, _positionDepthEntity_2, _positionDepthEntity_3 });
 
         depthChartRepo.Setup(s => s.GetTeamDetails(It.IsAny<Guid>()))
-            .Returns( _teamEntity );
+            .Returns((Guid teamId) =>
+            {
+                switch (teamId)
+                {
+                    case var value when value == _teamId: return _teamEntity;
+                    case var value when value == _unknownTeamId: return null;
+                    default: return _teamEntity;
+                }
+            });
 
         depthChartRepo.Setup(s => s.GetAllPlayersByTeam(It.IsAny<Guid>()))
             .Returns(new List<PositionDepthEntity>());
@@ -101,10 +118,14 @@ public class CoreBusinessTestMocks
 
 
     public static Guid _teamId = Guid.ParseExact("7f6c6655-8f6e-4d25-91a6-84b89631e1a7", "D");
+    public static Guid _unknownTeamId = Guid.ParseExact("7f6c6655-8f6e-4d25-91a6-84b89631e1a1", "D");
     public static string _positionCode = "OG";
+    public static string _wrongPositionCode = "AA";
     public static Guid _playerId_1 = Guid.ParseExact("c9010721-21d6-4c8c-ba26-8de7b1b2cf1f", "D");
     public static Guid _playerId_2 = Guid.ParseExact("c9010721-21d6-4c8c-ba26-8de7b1b2cf12", "D");
     public static Guid _playerId_3 = Guid.ParseExact("c9010721-21d6-4c8c-ba26-8de7b1b2cf13", "D");
+    public static Guid _unknownPlayerId = Guid.ParseExact("c9010721-21d6-4c8c-ba26-8de7b1b2cf14", "D");
+    public static Guid _deletedPlayerId = Guid.ParseExact("c9010721-21d6-4c8c-ba26-8de7b1b2cf15", "D");
     public static Player _player = new Player()
     { FirstName = "Mick", LastName = "Ratatouille", DepthChartkey = "U/AN", PlayerNumber = 65 };
 
@@ -146,6 +167,18 @@ public class CoreBusinessTestMocks
         CreatedOn = DateTime.UtcNow,
         UpdatedOn = DateTime.UtcNow
     };
+    public static PlayerEntity _deletedPlayerEntity = new PlayerEntity()
+    {
+        PlayerId = _playerId_1,
+        FirstName = _playerDetail.FirstName,
+        LastName = _playerDetail.LastName,
+        DepthChartkey = _playerDetail.DepthChartkey,
+        IsDeleted = true,
+        PlayerNumber = _playerDetail.PlayerNumber,
+        CreatedOn = DateTime.UtcNow,
+        UpdatedOn = DateTime.UtcNow
+    };
+
     public static PositionDepthEntity _positionDepthEntity_1 = new PositionDepthEntity()
     {
         PositionDepthId = Guid.NewGuid(),
