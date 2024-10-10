@@ -30,6 +30,25 @@ The respective UseCases are mapped with the drafted Test Cases below,
 4. **getFullDepthChart()**
   - Print out the full depth chart with every position on the team and every player within the Depth Chart - ***TestCase: Get_Full_Depth_Chart()***
 
+Few addition validation and edge cases are handled and respective test cases are,
+1. Add_Player_With_Null_Input
+2. Add_Player_With_Empty_Guid
+3. Add_Player_With_No_Player_Data
+4. Add_Player_With_No_First_Name
+5. Add_Player_With_No_Last_Name
+6. Add_Player_With_No_PlayerNumber
+7. Add_Player_With_Wrong_Status_Code
+8. Add_Player_With_Unknown_Position_Code
+9. Add_Player_With_Existing_Player
+10. Add_Player_With_Unknown_Error_At_Repo
+11. Remove_Player_With_Unknown_Position
+12. Remove_Player_With_Unknown_Error_At_Repo
+13. Get_Players_In_Position_Wrong_Position_Code
+14. Get_Backups_For_Unknown_Player
+15. Get_Backups_For_Deleted_Player
+16. Get_Backups_With_Wrong_Position_Code
+17. Get_Full_Depth_Chart_For_Unknown_Team
+
 ## Solution Design & Technical Spec: ##
 
 The endpoints are divided into **Player** and **DepthChart** controllers.
@@ -45,6 +64,8 @@ DepthChart Controller:
 
 The Solution diagram for reference:
 ![](https://github.com/PrithviRajaM/FanDuelCodeChallenge/blob/master/DepthChart_Service/Others/SolutionWFDiagram.png)
+Database Entity relationship diagram for reference:
+![](https://github.com/PrithviRajaM/FanDuelCodeChallenge/blob/master/DepthChart_Service/Others/DCSchema_ERDiagram.png)
 ## Swagger execution ##
 Execute the application with the below command with in FanDuelCodeChallenge > DepthChart_Service.
 
